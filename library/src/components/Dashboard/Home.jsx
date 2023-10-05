@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import Header from "../Header";
 import {BiTrashAlt, BiSolidEditAlt} from 'react-icons/bi'
 import {useNavigate} from "react-router-dom";
+import {routerAuth} from "../auth";
 
 function Home(){
 
@@ -52,35 +53,12 @@ function Home(){
                 setLoading(false);
             });
         }
-    async function routerAuth() {
 
-        let cleanData = {token}
-
-        let response = await fetch('http://localhost/api/admin-auth', {
-            method: 'POST',
-            body: JSON.stringify(cleanData),
-            headers: {
-                "Content-Type": 'application/json',
-                "Accept": 'application/json'
-            }
-        })
-
-        response = await response.json()
-
-        if(response.status === 403) {
-            navigate('/admin')
-        }
-
-        if(document.getElementById('admin-loader')) {
-            document.getElementById('admin-loader').style.display = "none";
-        }
-    }
 
     //Run function everytime the link is /dashboard
     useEffect( () => {
-        routerAuth();
+        routerAuth(navigate ,token);
     }, [])
-
     function openEdit(id) {
 
         navigate(`edit/${id}`)

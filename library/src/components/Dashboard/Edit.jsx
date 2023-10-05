@@ -1,8 +1,12 @@
 import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Header from "../Header";
+import {routerAuth} from "../auth";
 
 function Edit(){
+
+    let token = localStorage.getItem('token')
+    const navigate = useNavigate();
 
     const [data, setData] = useState('')
 
@@ -43,6 +47,10 @@ function Edit(){
 
     useEffect(()=> {
         fetchData()
+    }, [])
+
+    useEffect( () => {
+        routerAuth(navigate ,token);
     }, [])
 
     async function submitData(e) {
