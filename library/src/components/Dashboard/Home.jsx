@@ -1,11 +1,16 @@
 import {useEffect, useState} from "react";
 import Header from "../Header";
 import {BiTrashAlt, BiSolidEditAlt} from 'react-icons/bi'
+import {useNavigate} from "react-router-dom";
 
 function Home(){
 
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
+
+    let token = localStorage.getItem('token')
+
+    const navigate = useNavigate();
 
     const fetchData = () => {
         fetch('http://localhost/api/book-list')
@@ -18,7 +23,9 @@ function Home(){
                 console.log('Error fetching data:', error)
                 setLoading(false);
             }
+
         )
+            console.log(data)
     }
 
     useEffect(() => {
@@ -45,6 +52,40 @@ function Home(){
                 setLoading(false);
             });
         }
+    async function routerAuth() {
+
+        let cleanData = {token}
+
+        let response = await fetch('http://localhost/api/admin-auth', {
+            method: 'POST',
+            body: JSON.stringify(cleanData),
+            headers: {
+                "Content-Type": 'application/json',
+                "Accept": 'application/json'
+            }
+        })
+
+        response = await response.json()
+
+        if(response.status === 403) {
+            navigate('/admin')
+        }
+
+        if(document.getElementById('admin-loader')) {
+            document.getElementById('admin-loader').style.display = "none";
+        }
+    }
+
+    //Run function everytime the link is /dashboard
+    useEffect( () => {
+        routerAuth();
+    }, [])
+
+    function openEdit(id) {
+
+        navigate(`edit/${id}`)
+
+    }
 
     return (
         <div className="min-h-screen bg-background flex flex-col items-center p-2 lg:p-10 gap-4">
@@ -76,17 +117,18 @@ function Home(){
                                 <td className="admin-td">{item.title}</td>
                                 <td className="admin-td">{item.author}</td>
                                 <td className="admin-td">{item.created_at}</td>
-                                <td className="admin-td">{item.reserved}</td>
+                                <td className="admin-td">
+                                    {item.reserved === 0 ? <p className="text-[red]">No</p> : <p className="text-[green]">Yes</p>}
+                                </td>
                                 <td className="admin-td">{item.reserve_time}</td>
                                 <td className="admin-td">
                                     <div className="flex gap-2">
-                                        <button><BiSolidEditAlt className="text-text opacity-40 text-xl hover:opacity-100"/></button>
+                                        <button onClick={()=> openEdit(item.id)} ><BiSolidEditAlt className="text-text opacity-40 text-xl hover:opacity-100"/></button>
                                         <button onClick={() => handleDelete(item.id)}>
                                             <BiTrashAlt className="text-text opacity-40 text-xl hover:text-[red] hover:opacity-100"/>
                                         </button>
                                     </div>
                                 </td>
-
                             </tr>
                         ))}
                     </tbody>

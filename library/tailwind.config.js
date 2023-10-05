@@ -11,7 +11,8 @@ module.exports = {
       primary: '#b1c4c4',
       text: '#dae0e0',
       border: '#30303B',
-      tablehover: '#2a2a34'
+      tablehover: '#2a2a34',
+      red: '#ED2939'
     },
     extend: {},
   },

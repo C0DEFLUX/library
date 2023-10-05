@@ -15,7 +15,7 @@ root.render(
           <Route path="/admin" element={<AdminLogin/>}/>
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/dashboard/add" element={<Add/>} />
-          <Route path="/dashboard/edit" element={<Edit/>} />
+          <Route path="/dashboard/edit/:id" element={<Edit/>} />
       </Routes>
   </Router>
 );

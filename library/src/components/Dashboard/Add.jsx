@@ -1,16 +1,24 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Header from "../Header";
+import {useNavigate} from "react-router-dom";
 
 function Add() {
+
+    let token = localStorage.getItem('token')
+
+    const navigate = useNavigate();
 
     const [description, setDescription] = useState('')
     const [author, setAuthor] = useState('')
     const [title, setTitle] = useState('')
     const [mainImg, setMainImg] = useState('')
+    const [popup, setPopUp] = useState(false)
+    const [message, setMessage] = useState('')
 
     const handleChange = (file) => {
         setMainImg(file[0])
     }
+
 
     async function submitData(e) {
         e.preventDefault()
@@ -28,45 +36,148 @@ function Add() {
         response = await response.json()
 
         console.log(response)
+        if(response.status === 200) {
+            setPopUp(true)
+            setMessage(response.message)
+            setTitle('')
+            setAuthor('')
+            setDescription('')
+            setMainImg('')
+            document.getElementById('title-err').innerHTML = ''
+            document.getElementById('author-err').innerHTML = ''
+            document.getElementById('image-err').innerHTML = ''
+            document.getElementById('desc-err').innerHTML = ''
+        }
+        if(response.status === 403) {
+            document.getElementById('title-err').innerHTML = ''
+            document.getElementById('title-err').append(response.message.title)
+
+            document.getElementById('author-err').innerHTML = ''
+            document.getElementById('author-err').append(response.message.author)
+
+            document.getElementById('image-err').innerHTML = ''
+            document.getElementById('image-err').append(response.message.image)
+
+            document.getElementById('desc-err').innerHTML = ''
+            document.getElementById('desc-err').append(response.message.desc)
+        }
     }
 
+    async function routerAuth() {
+
+        let cleanData = {token}
+
+        let response = await fetch('http://localhost/api/admin-auth', {
+            method: 'POST',
+            body: JSON.stringify(cleanData),
+            headers: {
+                "Content-Type": 'application/json',
+                "Accept": 'application/json'
+            }
+        })
+
+        response = await response.json()
+
+        if(response.status === 403) {
+            navigate('/admin')
+        }
+
+        if(document.getElementById('admin-loader')) {
+            document.getElementById('admin-loader').style.display = "none";
+        }
+    }
+
+    //Run function everytime the link is /dashboard
+    useEffect( () => {
+        routerAuth();
+    }, [])
+
+    const closePopup = () => {
+        setPopUp(false)
+    }
+
+
+
     return (
-        <div>
+        <div className="min-h-screen bg-background flex flex-col items-center p-2 lg:p-10 gap-4">
             <Header/>
-            <form className="flex flex-col gap-4 w-[20rem] p-4" onSubmit={submitData}>
-                <input
-                    className="bg-neutral-300"
-                    value={title}
-                    type="text"
-                    name="title"
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Book Title"
-                />
-                <input
-                    className="bg-neutral-300"
-                    value={author}
-                    type="text"
-                    name="title"
-                    onChange={(e) => setAuthor(e.target.value)}
-                    placeholder="Book Author"
-                />
-                <input
-                    className="bg-neutral-300"
-                    value={description}
-                    type="text"
-                    name="description"
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Book Description "
-                />
-                <input
-                    className="bg-neutral-300"
-                    type="file"
-                    name="image"
-                    id="image"
-                    onChange={e => handleChange(e.target.files)}
-                    placeholder="Produkta nosaukums"
-                />
-                <button type="submit" className="admin-btn" onClick={submitData}>Send</button>
+            {popup === true ?
+                <div className="popup-wrapper flex flex-col gap-4 bg-secondary border-background rounded-xl border-2 p-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <h1 className="text-text">{message}</h1>
+                    <button onClick={closePopup} className="text-text bg-accent p-2 rounded-xl">Close</button>
+                </div>
+                :
+                ''
+            }
+            <form className="flex gap-6 w-full container flex-grow" onSubmit={submitData}>
+                <div className="flex gap-6 flex-col w-1/2 flex-grow">
+                    <div className="bg-secondary p-6 h-1/3 rounded-xl flex flex-col gap-2">
+                        <label className="text-text opacity-40">Book Title</label>
+                        <input
+                            className="bg-tablehover flex-grow text-text outline-none rounded-xl p-2"
+                            value={title}
+                            type="text"
+                            name="title"
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                        <span className="text-red" id="title-err"></span>
+                    </div>
+                    <div className="bg-secondary h-1/3 rounded-xl flex flex-col gap-2 p-6">
+                        <label className="text-text opacity-40">Book Author</label>
+                        <input
+                            className="bg-tablehover flex-grow rounded-xl outline-none p-2 text-text"
+                            value={author}
+                            type="text"
+                            name="title"
+                            onChange={(e) => setAuthor(e.target.value)}
+                        />
+                        <span className="text-red" id="author-err"></span>
+                    </div>
+                    <div className="bg-secondary p-4 h-2/3 rounded-xl">
+                        <div className="flex flex-col items-center justify-center w-full h-full">
+                            <label htmlFor="image" className="flex flex-col items-center justify-center w-full h-full border-2 border-tablehover border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg className="w-8 h-8 mb-4 text-text opacity-40" aria-hidden="true"
+                                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    </svg>
+                                    <p className="mb-2 text-sm text-text opacity-40"><span
+                                        className="font-semibold text-text">Click to upload</span> or drag and drop</p>
+                                    <p className="text-xs text-text opacity-40">PNG, JPG, JPEG</p>
+                                </div>
+                                <input
+                                    className="bg-neutral-300"
+                                    type="file"
+                                    name="image"
+                                    id="image"
+                                    onChange={e => handleChange(e.target.files)}
+                                    hidden
+                                />
+                            </label>
+                            <div className="w-full pt-2">
+                                <span className="text-red" id="image-err"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div className="w-1/2 flex gap-6 flex-col">
+                    <div className="bg-secondary p-6 h-4/5 rounded-xl flex flex-col gap-2">
+                        <label className="text-text opacity-40">Book Description</label>
+                        <textarea
+                            className="bg-neutral-300 w-full flex-grow rounded-xl p-2 bg-tablehover text-text outline-none resize-none"
+                            value={description}
+                            name="description"
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                        <span className="text-red" id="desc-err"></span>
+                    </div>
+                    <div className="bg-secondary p-6 h-1/5 rounded-xl flex items-center justify-center">
+                        <button type="submit" className="bg-accent w-full h-full rounded-xl text-text font-bold" onClick={submitData}>ADD BOOK</button>
+                    </div>
+                </div>
             </form>
         </div>
     )
