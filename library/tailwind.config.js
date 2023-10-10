@@ -12,7 +12,9 @@ module.exports = {
       text: '#dae0e0',
       border: '#30303B',
       tablehover: '#2a2a34',
-      red: '#ED2939'
+      red: '#ED2939',
+      green: '#2a9d10',
+      hover: 'rgba(34,34,34,0.62)'
     },
     extend: {},
   },

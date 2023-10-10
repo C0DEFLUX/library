@@ -1,11 +1,15 @@
 import {useEffect, useState} from "react";
-import Header from "../Header";
+import AdminHeader from "../AdminHeader";
 import {useNavigate} from "react-router-dom";
 import {routerAuth} from "../auth";
 
 function Add() {
 
-    let token = localStorage.getItem('token')
+    useEffect( () => {
+        routerAuth(navigate ,token);
+    }, [])
+
+    let token = localStorage.getItem('admin-token')
 
     const navigate = useNavigate();
 
@@ -16,56 +20,48 @@ function Add() {
     const [popup, setPopUp] = useState(false)
     const [message, setMessage] = useState('')
 
+    const [error, setError] = useState({
+        title: '',
+        desc: '',
+        author: '',
+        image: ''
+    })
+
+    useEffect(() => {
+    }, [error]);
+
     const handleChange = (file) => {
         setMainImg(file[0])
     }
 
-
     async function submitData(e) {
-        e.preventDefault()
-        const formData = new FormData()
+        e.preventDefault();
+        const formData = new FormData();
 
-        formData.append('title', title)
-        formData.append('author', author)
-        formData.append('description', description)
-        formData.append('image', mainImg)
+        formData.append('title', title);
+        formData.append('author', author);
+        formData.append('description', description);
+        formData.append('image', mainImg);
 
         let response = await fetch('http://localhost/api/add-book', {
             method: 'POST',
             body: formData,
-        })
-        response = await response.json()
+        });
 
-        console.log(response)
-        if(response.status === 200) {
-            setPopUp(true)
-            setMessage(response.message)
-            setTitle('')
-            setAuthor('')
-            setDescription('')
-            setMainImg('')
-            document.getElementById('title-err').innerHTML = ''
-            document.getElementById('author-err').innerHTML = ''
-            document.getElementById('image-err').innerHTML = ''
-            document.getElementById('desc-err').innerHTML = ''
-        }
-        if(response.status === 403) {
-            document.getElementById('title-err').innerHTML = ''
-            document.getElementById('title-err').append(response.message.title)
+        response = await response.json();
 
-            document.getElementById('author-err').innerHTML = ''
-            document.getElementById('author-err').append(response.message.author)
-
-            document.getElementById('image-err').innerHTML = ''
-            document.getElementById('image-err').append(response.message.image)
-
-            document.getElementById('desc-err').innerHTML = ''
-            document.getElementById('desc-err').append(response.message.desc)
+        if (response.status === 200) {
+            setPopUp(true);
+            setMessage(response.message);
+            setTitle('');
+            setAuthor('');
+            setDescription('');
+            setMainImg('');
+        } else if (response.status === 403) {
+            setError(response.error);
         }
     }
 
-
-    //Run function everytime the link is /dashboard
     useEffect( () => {
         routerAuth(navigate ,token);
     }, [])
@@ -74,11 +70,9 @@ function Add() {
         setPopUp(false)
     }
 
-
-
     return (
         <div className="min-h-screen bg-background flex flex-col items-center p-2 lg:p-10 gap-4">
-            <Header/>
+            <AdminHeader/>
             {popup === true ?
                 <div className="popup-wrapper flex flex-col gap-4 bg-secondary border-background rounded-xl border-2 p-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <h1 className="text-text">{message}</h1>
@@ -98,7 +92,9 @@ function Add() {
                             name="title"
                             onChange={(e) => setTitle(e.target.value)}
                         />
-                        <span className="text-red" id="title-err"></span>
+                        {error.title && (
+                            <span className="text-red">{error.title}</span>
+                        )}
                     </div>
                     <div className="bg-secondary h-1/3 rounded-xl flex flex-col gap-2 p-6">
                         <label className="text-text opacity-40">Book Author</label>
@@ -109,7 +105,9 @@ function Add() {
                             name="title"
                             onChange={(e) => setAuthor(e.target.value)}
                         />
-                        <span className="text-red" id="author-err"></span>
+                        {error.author && (
+                            <span className="text-red">{error.author}</span>
+                        )}
                     </div>
                     <div className="bg-secondary p-4 h-2/3 rounded-xl">
                         <div className="flex flex-col items-center justify-center w-full h-full">
@@ -135,7 +133,9 @@ function Add() {
                                 />
                             </label>
                             <div className="w-full pt-2">
-                                <span className="text-red" id="image-err"></span>
+                                {error.image && (
+                                    <span className="text-red">{error.image}</span>
+                                )}
                             </div>
                         </div>
 
@@ -150,7 +150,9 @@ function Add() {
                             name="description"
                             onChange={(e) => setDescription(e.target.value)}
                         />
-                        <span className="text-red" id="desc-err"></span>
+                        {error.desc && (
+                            <span className="text-red">{error.desc}</span>
+                        )}
                     </div>
                     <div className="bg-secondary p-6 h-1/5 rounded-xl flex items-center justify-center">
                         <button type="submit" className="bg-accent w-full h-full rounded-xl text-text font-bold" onClick={submitData}>ADD BOOK</button>

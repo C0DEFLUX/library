@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import Header from "../Header";
+import AdminHeader from "../AdminHeader";
 import {routerAuth} from "../auth";
 
 function Edit(){
 
-    let token = localStorage.getItem('token')
+    let token = localStorage.getItem('admin-token')
     const navigate = useNavigate();
 
     const [data, setData] = useState('')
@@ -20,6 +20,13 @@ function Edit(){
     const [popup, setPopUp] = useState(false)
     const [message, setMessage] = useState('')
 
+    const [error, setError] = useState({
+        title: '',
+        desc: '',
+        author: '',
+        image: ''
+    })
+
     const handleChange = (file) => {
         setMainImg(file[0])
     }
@@ -29,7 +36,7 @@ function Edit(){
     }
 
     const fetchData = () => {
-        fetch(`http://localhost/api/update-book-data/${params.id}`)
+        fetch(`http://localhost/api/single-book-data/${params.id}`)
             .then((response) => response.json())
             .then((data) => {
                 setData(data)
@@ -68,35 +75,18 @@ function Edit(){
         })
         response = await response.json()
 
-        console.log(response)
-       if(response.status === 200) {
-           setPopUp(true)
-           setMessage(response.message)
-            document.getElementById('title-err').innerHTML = ''
-            document.getElementById('author-err').innerHTML = ''
-            document.getElementById('image-err').innerHTML = ''
-            document.getElementById('desc-err').innerHTML = ''
-
-
-        }
-        if(response.status === 403) {
-            document.getElementById('title-err').innerHTML = ''
-            document.getElementById('title-err').append(response.message.title)
-
-            document.getElementById('author-err').innerHTML = ''
-            document.getElementById('author-err').append(response.message.author)
-
-            document.getElementById('image-err').innerHTML = ''
-            document.getElementById('image-err').append(response.message.image)
-
-            document.getElementById('desc-err').innerHTML = ''
-            document.getElementById('desc-err').append(response.message.desc)
+        if (response.status === 200) {
+            setPopUp(true);
+            setMessage(response.message);
+            setError('')
+        } else if (response.status === 403) {
+            setError(response.error);
         }
     }
 
     return (
         <div className="min-h-screen bg-background flex flex-col items-center p-2 lg:p-10 gap-4">
-            <Header/>
+            <AdminHeader/>
             {popup === true ?
                 <div className="popup-wrapper flex flex-col gap-4 bg-secondary border-background rounded-xl border-2 p-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <h1 className="text-text">{message}</h1>
@@ -116,7 +106,9 @@ function Edit(){
                             name="title"
                             onChange={(e) => setTitle(e.target.value)}
                         />
-                        <span className="text-red" id="title-err"></span>
+                        {error.title && (
+                            <span className="text-red">{error.title}</span>
+                        )}
                     </div>
                     <div className="bg-secondary h-1/3 rounded-xl flex flex-col gap-2 p-6">
                         <label className="text-text opacity-40">Book Author</label>
@@ -127,7 +119,9 @@ function Edit(){
                             name="title"
                             onChange={(e) => setAuthor(e.target.value)}
                         />
-                        <span className="text-red" id="author-err"></span>
+                        {error.author && (
+                            <span className="text-red">{error.author}</span>
+                        )}
                     </div>
                     <div className="bg-secondary p-4 h-2/3 rounded-xl">
                         <div className="flex flex-col items-center justify-center w-full h-full">
@@ -144,7 +138,9 @@ function Edit(){
                                 />
                             </div>
                             <div className="w-full pt-2">
-                                <span className="text-red" id="image-err"></span>
+                                {error.image && (
+                                    <span className="text-red">{error.image}</span>
+                                )}
                             </div>
                         </div>
 
@@ -159,7 +155,9 @@ function Edit(){
                             name="description"
                             onChange={(e) => setDescription(e.target.value)}
                         />
-                        <span className="text-red" id="desc-err"></span>
+                        {error.desc && (
+                            <span className="text-red">{error.desc}</span>
+                        )}
                     </div>
                     <div className="bg-secondary p-6 h-1/5 rounded-xl flex items-center justify-center">
                         <button type="submit" className="bg-accent w-full h-full rounded-xl text-text font-bold" onClick={submitData}>SAVE EDIT</button>

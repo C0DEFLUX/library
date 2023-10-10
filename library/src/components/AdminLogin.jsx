@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
 function AdminLogin() {
@@ -6,13 +6,17 @@ function AdminLogin() {
     //Get input values
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState({
+        userErr: '',
+        passErr: '',
+        status: ''
+    })
+
+    useEffect(() => {
+    }, [error]);
 
     //Navigate
     const navigate = useNavigate()
-
-    //Get input error spans
-    const userErr = document.getElementById('user-err')
-    let passErr = document.getElementById('pass-err')
 
     async function login() {
 
@@ -31,23 +35,13 @@ function AdminLogin() {
         })
         response = await response.json()
 
-        if (response.passErr !== '') {
-            document.getElementById('pass-err').innerHTML = ''
-            document.getElementById('pass-err').append(response.passErr)
-        } else {
-            document.getElementById('pass-err').innerHTML = ''
-        }
-
-        if (response.userErr !== '') {
-            document.getElementById('user-err').innerHTML = ''
-            document.getElementById('user-err').append(response.userErr)
-        } else {
-            document.getElementById('user-err').innerHTML = ''
-        }
-
         if (response.status === 200) {
-            localStorage.setItem('token', response.token)
+            localStorage.setItem('admin-token', response.token)
             navigate('/dashboard');
+        }
+
+        if(response.status === 403) {
+            setError(response)
         }
     }
 
@@ -61,14 +55,18 @@ function AdminLogin() {
                        onChange={(e) => setUsername(e.target.value)}
                        placeholder="Username"
                 />
-                <span className="text-red" id="user-err" ></span>
+                {error.userErr && (
+                    <span className="text-red">{error.userErr}</span>
+                )}
                 <input className="p-4 bg-tablehover rounded-xl text-text outline-none"
                        value={password}
                        type="password"
                        onChange={(e) => setPassword(e.target.value)}
                        placeholder="Password"
                 />
-                <span className="text-red" id="pass-err" ></span>
+                {error.passErr && (
+                    <span className="text-red">{error.passErr}</span>
+                )}
                 <button className="p-4 text-xl text-text rounded-xl bg-accent " onClick={login}>LOGIN</button>
             </div>
         </div>
