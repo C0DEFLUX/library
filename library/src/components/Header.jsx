@@ -63,13 +63,13 @@ function Header() {
 
     return(
         <div className="container py-8">
-            <div className="flex justify-between">
+            <div className="flex flex-col p-2 gap-2 lg:gap-0 lg:p-0 lg:flex-row justify-between">
                 <a href="/" className="text-text">Library</a>
                 <div>
                     {isAuth === 'true' ?
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-4">
                             <h1 className="text-text justify-center">Welcome, {userName}</h1>
-                            <button className="py-4 px-8 text-text bg-accent cursor-pointer rounded-xl" onClick={()=>handleMyBooks(uid)}>My books</button>
+                            <button className="py-4 px-8 text-text bg-accent cursor-pointer rounded-xl" onClick={()=>handleMyBooks(userName)}>My books</button>
                             <button className="py-4 px-8 text-text bg-secondary cursor-pointer rounded-xl" onClick={logout}>Logout</button>
                         </div>
                         :

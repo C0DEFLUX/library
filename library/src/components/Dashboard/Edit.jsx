@@ -95,8 +95,8 @@ function Edit(){
                 :
                 ''
             }
-            <form className="flex gap-6 w-full container flex-grow" onSubmit={submitData}>
-                <div className="flex gap-6 flex-col w-1/2 flex-grow">
+            <form className="flex gap-6 w-full container flex-grow flex-col lg:flex-row" onSubmit={submitData}>
+                <div className="flex gap-6 flex-col lg:w-1/2 flex-grow">
                     <div className="bg-secondary p-6 h-1/3 rounded-xl flex flex-col gap-2">
                         <label className="text-text opacity-40">Book Title</label>
                         <input
@@ -146,7 +146,7 @@ function Edit(){
 
                     </div>
                 </div>
-                <div className="w-1/2 flex gap-6 flex-col">
+                <div className="lg:w-1/2 flex gap-6 flex-col">
                     <div className="bg-secondary p-6 h-4/5 rounded-xl flex flex-col gap-2">
                         <label className="text-text opacity-40">Book Description</label>
                         <textarea
@@ -160,7 +160,7 @@ function Edit(){
                         )}
                     </div>
                     <div className="bg-secondary p-6 h-1/5 rounded-xl flex items-center justify-center">
-                        <button type="submit" className="bg-accent w-full h-full rounded-xl text-text font-bold" onClick={submitData}>SAVE EDIT</button>
+                        <button type="submit" className="bg-accent w-full h-full rounded-xl text-text p-4 lg:p-4 font-bold" onClick={submitData}>SAVE EDIT</button>
                     </div>
                 </div>
             </form>

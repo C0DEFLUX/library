@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
-function Login() {
+function Register() {
 
     //Get input values
     const [username, setUsername] = useState('')
@@ -18,11 +18,11 @@ function Login() {
     //Navigate
     const navigate = useNavigate()
 
-    async function login() {
+    async function register() {
 
         let cleanData = {username, password}
 
-        let response = await fetch('http://localhost/api/login', {
+        let response = await fetch('http://localhost/api/register', {
 
             method: 'POST',
             body: JSON.stringify(cleanData),
@@ -35,8 +35,7 @@ function Login() {
         response = await response.json()
 
         if (response.status === 200) {
-            localStorage.setItem('token', response.token)
-            navigate('/');
+            navigate('/login');
         }
 
         if(response.status === 403) {
@@ -47,7 +46,7 @@ function Login() {
     return (
         <div className="login-container min-h-screen flex justify-center items-center p-2 bg-background">
             <div className="login-box flex flex-col gap-3 bg-white shadow rounded-md p-2 py-8 w-full md:w-[30rem] md:p-20 md:min-h-[30rem] bg-secondary">
-                <h1 className="text-2xl text-center mb-4 text-text">Login</h1>
+                <h1 className="text-2xl text-center mb-4 text-text">Register</h1>
                 <input className="p-4 bg-tablehover text-text rounded-xl outline-none"
                        value={username}
                        type="text"
@@ -66,11 +65,10 @@ function Login() {
                 {error.pass_err && (
                     <span className="text-red">{error.pass_err}</span>
                 )}
-                <button className="p-4 text-xl text-text rounded-xl bg-accent " onClick={login}>LOGIN</button>
-                <a className="text-text" href="/register">Register</a>
+                <button className="p-4 text-xl text-text rounded-xl bg-accent " onClick={register}>REGISTER</button>
             </div>
         </div>
     )
 }
 
-export default Login
+export default Register

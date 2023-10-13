@@ -92,7 +92,7 @@ function Home(){
                 </div>
                 )}
             <AdminHeader/>
-            <div className="table-wrapper container bg-secondary flex-grow p-4 rounded-md flex flex-col">
+            <div className="table-wrapper overflow-y-scroll container bg-secondary flex-grow p-4 rounded-md flex flex-col">
                 {loading ? (
                     <div className="flex-grow w-full flex justify-center items-center">
                         <div className="lds-facebook">
@@ -110,7 +110,8 @@ function Home(){
                             <th className="admin-th">Author</th>
                             <th className="admin-th">Date Added</th>
                             <th className="admin-th">Reserved</th>
-                            <th className="admin-th">Reserved for</th>
+                            <th className="admin-th">Reserved till</th>
+                            <th className="admin-th">Reserved by</th>
                             <th className="admin-th">Actions</th>
                         </tr>
                         {data.map((item, count) => (
@@ -123,6 +124,7 @@ function Home(){
                                     {item.reserved === 0 ? <p className="text-[red]">No</p> : <p className="text-[green]">Yes</p>}
                                 </td>
                                 <td className="admin-td">{item.reserve_time}</td>
+                                <td className="admin-td">{item.user}</td>
                                 <td className="admin-td">
                                     <div className="flex gap-2">
                                         <button onClick={()=> openEdit(item.id)} ><BiSolidEditAlt className="text-text opacity-40 text-xl hover:opacity-100"/></button>

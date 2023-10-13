@@ -12,7 +12,7 @@ function AdminHeader() {
     }
 
     return  (
-        <div className="flex gap-4 w-full container justify-between">
+        <div className="flex gap-4 w-full container justify-between flex-wrap">
             <div className="title bg-secondary rounded-xl">
                 <h1 className="text-text py-4 px-10">Library</h1>
             </div>

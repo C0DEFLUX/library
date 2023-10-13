@@ -45,7 +45,7 @@ function Home() {
                         </div>
                     </div>
                 ):(
-                    <div className="book-catalog-wrapper container flex-grow grid grid-rows-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+                    <div className="book-catalog-wrapper p-2 lg:p-0 container flex-grow grid grid-rows-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
                         {data.map((item) => (
                             <div className="group h-[25rem] bg-accent relative">
                                 <img className="object-cover h-full w-full" src={item.image} alt="" />
