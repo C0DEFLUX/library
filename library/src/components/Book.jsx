@@ -19,8 +19,6 @@ function Book() {
     const [timePopUp, setTimePopUp] = useState(false)
     const [dateErr, setDateErr] = useState('')
     let uid = ''
-    const [toms, setToms] = useState('')
-
 
     // console.log(params.id)
 
